@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arc Forge — Deploy Smart Contracts in Minutes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
+    <style>
+        :root {
+            --ivory: #faf8f3;
+            --charcoal: #2a2a2a;
+            --warm-gray: #6b6b6b;
+            --terracotta: #d4765b;
+            --sage: #7a9b8e;
+            --cream: #f5f1e8;
+            --gold: #c9a05f;
+            --shadow: rgba(42, 42, 42, 0.08);
+        }
+
+```
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background: var(--ivory);
+        color: var(--charcoal);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* Typography */
+    h1, h2, h3 {
+        font-family: 'Crimson Pro', serif;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+    }
+
+    h1 {
+        font-size: 4.5rem;
+        line-height: 1;
+        margin-bottom: 1rem;
+        color: #1a1a1a;
+        position: relative;
+        display: inline-block;
+        background: linear-gradient(
+            90deg,
+            #1a1a1a 0%,
+            #1a1a1a 40%,
+            #ffffff 50%,
+            #1a1a1a 60%,
+            #1a1a1a 100%
+        );
+        background-size: 200% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: glisten 3s ease-in-out infinite;
+    }
+
+    @keyframes glisten {
+        0% {
+            background-position: -200% 0;
+        }
+        50% {
+            background-position: 200% 0;
+        }
+        100% {
+            background-position: -200% 0;
+        }
+    }
+
+    h2 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Layout */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 3rem 2rem;
+    }
+
+    /* Header */
+    header {
+        text-align: center;
+        padding: 4rem 0 3rem;
+        border-bottom: 1px solid rgba(42, 42, 42, 0.1);
+        margin-bottom: 4rem;
+    }
+
+    .forge-mark {
+        display: inline-block;
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .tagline {
+        font-size: 1.25rem;
+        color: var(--warm-gray);
+        max-width: 600px;
+        margin: 0 auto 2rem;
+    }
+
+    .network-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--cream);
+        padding: 0.5rem 1.25rem;
+        border-radius: 100px;
+        font-size: 0.875rem;
+        color: var(--warm-gray);
+        border: 1px solid rgba(42, 42, 42, 0.1);
+    }
+
+    .pulse-dot {
+        width: 6px;
+        height: 6px;
+        background: var(--sage);
+        border-radius: 50%;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.9); }
+    }
+
+    /* Wallet Connection */
+    .wallet-section {
+        background: white;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px var(--shadow);
+        margin-bottom: 3rem;
+        border: 1px solid rgba(42, 42, 42, 0.08);
+    }
+
+    .wallet-status {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+    }
+
+    .wallet-info {
+        flex: 1;
+    }
+
+    .wallet-label {
+        font-size: 0.875rem;
+        color: var(--warm-gray);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 0.5rem;
+    }
+
+    .wallet-address {
+        font-family: 'Inter', monospace;
+        font-size: 0.95rem;
+        color: var(--charcoal);
+        font-weight: 500;
+    }
+
+    .wallet-btn {
+        background: var(--charcoal);
+        color: var(--ivory);
+        border: none;
+        padding: 0.875rem 2rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+    }
+
+    .wallet-btn:hover {
+        background: var(--terracotta);
+        transform: translateY(-1px);
+    }
+
+    .wallet-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Steps */
+    .steps {
+        display: grid;
+        gap: 2rem;
+    }
+
+    .step {
+        background: white;
+        border-radius: 16px;
+        padding: 2.5rem;
+        box-shadow: 0 4px 16px var(--shadow);
+        border: 1px solid rgba(42, 42, 42, 0.08);
+        opacity: 0;
+        animation: slideUp 0.6s ease forwards;
+    }
+
+    .step:nth-child(1) { animation-delay: 0.1s; }
+    .step:nth-child(2) { animation-delay: 0.2s; }
+    .step:nth-child(3) { animation-delay: 0.3s; }
+    .step:nth-child(4) { animation-delay: 0.4s; }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .step-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .step-number {
+        width: 48px;
+        height: 48px;
+        background: var(--cream);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--terracotta);
+        flex-shrink: 0;
+    }
+
+    .step-title {
+        font-size: 1.5rem;
+    }
+
+    .step-description {
+        color: var(--warm-gray);
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+    }
+
+    /* Contract Types */
+    .contract-types {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+    }
+
+    .contract-card {
+        background: var(--cream);
+        border: 2px solid transparent;
+        border-radius: 12px;
+        padding: 1.75rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .contract-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--terracotta), var(--gold));
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .contract-card:hover {
+        border-color: var(--terracotta);
+        transform: translateY(-2px);
+    }
+
+    .contract-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .contract-card.selected {
+        background: white;
+        border-color: var(--terracotta);
+        box-shadow: 0 8px 24px rgba(212, 118, 91, 0.15);
+    }
+
+    .contract-card.selected::before {
+        transform: scaleX(1);
+    }
+
+    .contract-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    .contract-name {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--charcoal);
+    }
+
+    .contract-desc {
+        font-size: 0.875rem;
+        color: var(--warm-gray);
+        line-height: 1.5;
+    }
+
+    /* Form Elements */
+    .form-grid {
+        display: grid;
+        gap: 1.25rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--charcoal);
+        margin-bottom: 0.5rem;
+    }
+
+    label .optional {
+        color: var(--warm-gray);
+        font-weight: 400;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea {
+        background: var(--cream);
+        border: 1px solid rgba(42, 42, 42, 0.1);
+        border-radius: 8px;
+        padding: 0.875rem 1rem;
+        font-size: 1rem;
+        font-family: 'Inter', sans-serif;
+        color: var(--charcoal);
+        transition: all 0.3s ease;
+    }
+
+    input:focus,
+    textarea:focus {
+        outline: none;
+        border-color: var(--terracotta);
+        background: white;
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    ::placeholder {
+        color: var(--warm-gray);
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        background: var(--terracotta);
+        color: white;
+        border: none;
+        padding: 1.125rem 2.5rem;
+        border-radius: 8px;
+        font-size: 1.125rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+
+    .action-btn:hover:not(:disabled) {
+        background: var(--charcoal);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(42, 42, 42, 0.2);
+    }
+
+    .action-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .btn-icon {
+        font-size: 1.5rem;
+    }
+
+    /* Success State */
+    .success-card {
+        background: linear-gradient(135deg, var(--sage) 0%, var(--gold) 100%);
+        color: white;
+        padding: 2.5rem;
+        border-radius: 16px;
+        text-align: center;
+        display: none;
+    }
+
+    .success-card.show {
+        display: block;
+        animation: successPop 0.5s ease;
+    }
+
+    @keyframes successPop {
+        0% {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .success-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .success-title {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .contract-address-display {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 1rem;
+        border-radius: 8px;
+        font-family: 'Inter', monospace;
+        font-size: 0.95rem;
+        margin: 1.5rem 0;
+        word-break: break-all;
+    }
+
+    .explorer-link {
+        display: inline-block;
+        background: white;
+        color: var(--charcoal);
+        padding: 0.875rem 2rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        margin-top: 1rem;
+        transition: transform 0.3s ease;
+    }
+
+    .explorer-link:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Loading State */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(42, 42, 42, 0.95);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .loading-overlay.show {
+        display: flex;
+    }
+
+    .loading-content {
+        text-align: center;
+        color: white;
+    }
+
+    .spinner {
+        width: 60px;
+        height: 60px;
+        border: 3px solid rgba(255, 255, 255, 0.2);
+        border-top-color: var(--terracotta);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1.5rem;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .loading-subtext {
+        font-size: 0.95rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Info Box */
+    .info-box {
+        background: var(--cream);
+        border-left: 4px solid var(--sage);
+        padding: 1.25rem;
+        border-radius: 8px;
+        margin-top: 1.5rem;
+    }
+
+    .info-box-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--charcoal);
+    }
+
+    .info-box-text {
+        font-size: 0.95rem;
+        color: var(--warm-gray);
+        line-height: 1.6;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 3rem;
+        }
+
+        .contract-types {
+            grid-template-columns: 1fr;
+        }
+
+        .wallet-status {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .wallet-btn {
+            width: 100%;
+        }
+    }
+
+    /* Hide steps initially */
+    .step.hidden {
+        display: none;
+    }
+
+    /* Signature */
+    .signature {
+        text-align: center;
+        padding: 3rem 0 2rem;
+        margin-top: 4rem;
+        border-top: 1px solid rgba(42, 42, 42, 0.1);
+    }
+
+    .signature-text {
+        font-family: 'Crimson Pro', serif;
+        font-size: 0.95rem;
+        color: var(--warm-gray);
+        font-style: italic;
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="forge-mark">⚒️</div>
+            <h1>Arc Forge</h1>
+            <p class="tagline">Deploy your own smart contracts to Arc Network in minutes. No coding required.</p>
+            <div class="network-pill">
+                <span class="pulse-dot"></span>
+                <span>Arc Testnet</span>
+            </div>
+        </header>
+
+```
+    <!-- Wallet Connection -->
+    <div class="wallet-section">
+        <div class="wallet-status">
+            <div class="wallet-info">
+                <div class="wallet-label">Wallet Status</div>
+                <div class="wallet-address" id="walletAddress">Not connected</div>
+            </div>
+            <button class="wallet-btn" id="connectWalletBtn" onclick="connectWallet()">
+                Connect Wallet
+            </button>
+        </div>
+    </div>
+
+    <!-- Steps -->
+    <div class="steps">
+        <!-- Step 1: Choose Contract Type -->
+        <div class="step" id="step1">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <h2 class="step-title">Choose What to Build</h2>
+            </div>
+            <p class="step-description">Select the type of smart contract you want to create</p>
+            
+            <div class="contract-types">
+                <div class="contract-card" data-type="token" onclick="selectContractType('token')">
+                    <span class="contract-icon">🪙</span>
+                    <div class="contract-name">Token</div>
+                    <div class="contract-desc">Create your own cryptocurrency that people can send and receive</div>
+                </div>
+                
+                <div class="contract-card" data-type="nft" onclick="selectContractType('nft')">
+                    <span class="contract-icon">🎨</span>
+                    <div class="contract-name">NFT Collection</div>
+                    <div class="contract-desc">Make unique digital collectibles that can be owned and traded</div>
+                </div>
+                
+                <div class="contract-card" data-type="voting" onclick="selectContractType('voting')">
+                    <span class="contract-icon">🗳️</span>
+                    <div class="contract-name">Voting System</div>
+                    <div class="contract-desc">Build a transparent voting platform for decisions and governance</div>
+                </div>
+                
+                <div class="contract-card" data-type="custom" onclick="selectContractType('custom')">
+                    <span class="contract-icon">✨</span>
+                    <div class="contract-name">Custom Contract</div>
+                    <div class="contract-desc">Describe what you want to build in your own words</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Configure Your Contract -->
+        <div class="step hidden" id="step2">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <h2 class="step-title">Name Your Creation</h2>
+            </div>
+            <p class="step-description">Fill in the details for your smart contract</p>
+            
+            <div id="tokenForm" class="form-grid hidden">
+                <div class="form-group">
+                    <label>Token Name</label>
+                    <input type="text" id="tokenName" placeholder="e.g., My Awesome Token">
+                </div>
+                <div class="form-group">
+                    <label>Symbol</label>
+                    <input type="text" id="tokenSymbol" placeholder="e.g., MAT" maxlength="10">
+                </div>
+                <div class="form-group">
+                    <label>Total Supply</label>
+                    <input type="number" id="tokenSupply" placeholder="e.g., 1000000">
+                </div>
+            </div>
+
+            <div id="nftForm" class="form-grid hidden">
+                <div class="form-group">
+                    <label>Collection Name</label>
+                    <input type="text" id="nftName" placeholder="e.g., Cool Art Collection">
+                </div>
+                <div class="form-group">
+                    <label>Symbol</label>
+                    <input type="text" id="nftSymbol" placeholder="e.g., COOL" maxlength="10">
+                </div>
+            </div>
+
+            <div id="votingForm" class="form-grid hidden">
+                <div class="form-group">
+                    <label>Voting System Name</label>
+                    <input type="text" id="votingName" placeholder="e.g., Community Decisions">
+                </div>
+                <div class="form-group">
+                    <label>Description <span class="optional">(optional)</span></label>
+                    <textarea id="votingDesc" placeholder="What will this voting system be used for?"></textarea>
+                </div>
+            </div>
+
+            <div id="customForm" class="form-grid hidden">
+                <div class="form-group">
+                    <label>Contract Name</label>
+                    <input type="text" id="customName" placeholder="e.g., My Smart Contract">
+                </div>
+                <div class="form-group">
+                    <label>Describe what you want your contract to do</label>
+                    <textarea id="customDesc" placeholder="Example: I want a contract that stores messages that only I can update. Anyone can read the messages but only I can change them." rows="5"></textarea>
+                </div>
+            </div>
+
+            <button class="action-btn" onclick="reviewContract()">
+                <span>Continue</span>
+                <span class="btn-icon">→</span>
+            </button>
+        </div>
+
+        <!-- Step 3: Review -->
+        <div class="step hidden" id="step3">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <h2 class="step-title">Review & Deploy</h2>
+            </div>
+            <p class="step-description">Check everything looks good, then deploy your contract</p>
+            
+            <div id="reviewContent" class="form-grid"></div>
+
+            <div class="info-box">
+                <div class="info-box-title">💡 What happens when you deploy?</div>
+                <div class="info-box-text">
+                    Your smart contract will be published to the Arc blockchain. This means it will exist forever and anyone can interact with it. You'll pay a small fee in USDC (Arc's gas token) for the deployment.
+                </div>
+            </div>
+
+            <button class="action-btn" id="deployBtn" onclick="deployContract()">
+                <span class="btn-icon">🚀</span>
+                <span>Deploy to Arc</span>
+            </button>
+        </div>
+
+        <!-- Step 4: Success -->
+        <div class="step hidden" id="step4">
+            <div class="success-card" id="successCard">
+                <div class="success-icon">🎉</div>
+                <h2 class="success-title">Contract Deployed!</h2>
+                <p>Your smart contract is now live on Arc Network</p>
+                <div class="contract-address-display" id="deployedAddress"></div>
+                <a href="#" id="explorerLink" class="explorer-link" target="_blank">
+                    View on Explorer →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="signature">
+        <div class="signature-text">built by Tunez</div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+        <div class="spinner"></div>
+        <div class="loading-text" id="loadingText">Deploying your contract...</div>
+        <div class="loading-subtext" id="loadingSubtext">This may take a few moments</div>
+    </div>
+</div>
+
+<script>
+    let selectedType = null;
+    let provider = null;
+    let signer = null;
+    let userAddress = null;
+
+    // Connect wallet
+    async function connectWallet() {
+        try {
+            if (typeof window.ethereum === 'undefined') {
+                alert('Please install MetaMask to use Arc Forge!\n\nMetaMask is a browser extension that manages your crypto wallet. You can download it from metamask.io');
+                window.open('https://metamask.io/download/', '_blank');
+                return;
+            }
+
+            const btn = document.getElementById('connectWalletBtn');
+            btn.disabled = true;
+            btn.textContent = 'Connecting...';
+
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.send('eth_requestAccounts', []);
+            signer = provider.getSigner();
+            userAddress = await signer.getAddress();
+
+            // Try to switch to Arc testnet
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: '0x2D4D' }], // Arc Testnet chain ID (11597 in hex)
+                });
+            } catch (switchError) {
+                // Chain doesn't exist, add it
+                if (switchError.code === 4902) {
+                    await window.ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [{
+                            chainId: '0x2D4D',
+                            chainName: 'Arc Testnet',
+                            nativeCurrency: {
+                                name: 'USDC',
+                                symbol: 'USDC',
+                                decimals: 6
+                            },
+                            rpcUrls: ['https://rpc.testnet.arc.network'],
+                            blockExplorerUrls: ['https://testnet.arcscan.app']
+                        }]
+                    });
+                }
+            }
+
+            document.getElementById('walletAddress').textContent = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
+            btn.textContent = 'Connected ✓';
+            btn.style.background = 'var(--sage)';
+
+        } catch (error) {
+            console.error('Error connecting wallet:', error);
+            alert('Failed to connect wallet. Please try again.');
+            const btn = document.getElementById('connectWalletBtn');
+            btn.disabled = false;
+            btn.textContent = 'Connect Wallet';
+        }
+    }
+
+    // Select contract type
+    function selectContractType(type) {
+        if (!userAddress) {
+            alert('Please connect your wallet first!');
+            return;
+        }
+
+        selectedType = type;
+        
+        // Update UI
+        document.querySelectorAll('.contract-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+        document.querySelector(`[data-type="${type}"]`).classList.add('selected');
+
+        // Show step 2
+        setTimeout(() => {
+            document.getElementById('step2').classList.remove('hidden');
+            document.getElementById('step2').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Show relevant form
+            document.querySelectorAll('#tokenForm, #nftForm, #votingForm, #customForm').forEach(form => {
+                form.classList.add('hidden');
+            });
+            document.getElementById(`${type}Form`).classList.remove('hidden');
+        }, 300);
+    }
+
+    // Review contract
+    function reviewContract() {
+        let isValid = true;
+        let reviewHTML = '';
+
+        if (selectedType === 'token') {
+            const name = document.getElementById('tokenName').value.trim();
+            const symbol = document.getElementById('tokenSymbol').value.trim();
+            const supply = document.getElementById('tokenSupply').value.trim();
+
+            if (!name || !symbol || !supply) {
+                alert('Please fill in all fields!');
+                return;
+            }
+
+            reviewHTML = `
+                <div class="form-group">
+                    <label>Token Name</label>
+                    <input type="text" value="${name}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Symbol</label>
+                    <input type="text" value="${symbol}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Total Supply</label>
+                    <input type="text" value="${Number(supply).toLocaleString()}" readonly>
+                </div>
+            `;
+        } else if (selectedType === 'nft') {
+            const name = document.getElementById('nftName').value.trim();
+            const symbol = document.getElementById('nftSymbol').value.trim();
+
+            if (!name || !symbol) {
+                alert('Please fill in all fields!');
+                return;
+            }
+
+            reviewHTML = `
+                <div class="form-group">
+                    <label>Collection Name</label>
+                    <input type="text" value="${name}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Symbol</label>
+                    <input type="text" value="${symbol}" readonly>
+                </div>
+            `;
+        } else if (selectedType === 'voting') {
+            const name = document.getElementById('votingName').value.trim();
+
+            if (!name) {
+                alert('Please fill in the voting system name!');
+                return;
+            }
+
+            reviewHTML = `
+                <div class="form-group">
+                    <label>Voting System Name</label>
+                    <input type="text" value="${name}" readonly>
+                </div>
+            `;
+        } else if (selectedType === 'custom') {
+            const name = document.getElementById('customName').value.trim();
+            const desc = document.getElementById('customDesc').value.trim();
+
+            if (!name || !desc) {
+                alert('Please fill in all fields!');
+                return;
+            }
+
+            reviewHTML = `
+                <div class="form-group">
+                    <label>Contract Name</label>
+                    <input type="text" value="${name}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea readonly rows="4">${desc}</textarea>
+                </div>
+            `;
+        }
+
+        document.getElementById('reviewContent').innerHTML = reviewHTML;
+        document.getElementById('step3').classList.remove('hidden');
+        document.getElementById('step3').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // Deploy contract
+    async function deployContract() {
+        if (!signer) {
+            alert('Please connect your wallet first!');
+            return;
+        }
+
+        const overlay = document.getElementById('loadingOverlay');
+        overlay.classList.add('show');
+
+        try {
+            let bytecode, abi, contractName;
+
+            if (selectedType === 'token') {
+                const name = document.getElementById('tokenName').value.trim();
+                const symbol = document.getElementById('tokenSymbol').value.trim();
+                const supply = document.getElementById('tokenSupply').value.trim();
+
+                // Simple ERC20 bytecode (pre-compiled)
+                // Note: In production, you'd compile this properly
+                bytecode = "0x608060405234801561001057600080fd5b506040516108083803806108088339818101604052810190610032919061015d565b8060ff16600a61004291906103a0565b816100509190810190610471565b6000819055506000543373ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef60405160405180910390a3505061055c565b600080fd5b600080fd5b6000819050919050565b6100c0816100ad565b81146100cb57600080fd5b50565b6000815190506100dd816100b7565b92915050565b60008115159050919050565b6100f8816100e3565b811461010357600080fd5b50565b600081519050610115816100ef565b92915050565b600080fd5b600080fd5b600080fd5b60008083601f84011261014057610140610125565b5b8235905067ffffffffffffffff81111561015d5761015c61012a565b5b6020830191508360018202830111156101795761017461012f565b5b9250929050565b6000806000806060858703121561019a576101996100a3565b5b60006101a887828801610106565b945050602085013567ffffffffffffffff8111156101c9576101c86100a8565b5b6101d58782880161012a565b935093505060406101e8878288016100ce565b91505092959194509250565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b60008160011c9050919050565b6000808291508390505b600185111561027a57808604811115610256576102556101f4565b5b60018516156102655780820291505b808102905061027385610223565b945061023a565b94509492505050565b60008261029357600190506102cf565b816102a157600090506102cf565b81600181146102b757600281146102c1576102f0565b60019150506102cf565b60ff8411156102d3576102d26101f4565b5b8360020a9150846102e3576102e26101f4565b5b506102cf565b5060208310610133831016604e8410600b84101617156103195782820a905083811115610314576103136101f4565b5b6102cf565b6103268484846001610230565b9250905081840481111561033d5761033c6101f4565b5b81810290505b9392505050565b600061035582610aad565b915061036083610aad565b925061038d7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8484610283565b905092915050565b600061ffff82169050919050565b60006103ae82610395565b91506103b983610395565b9250817fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff04831182151516156103f2576103f16101f4565b5b828202905092915050565b600061040882610aad565b915061041383610aad565b9250827fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff03821115610448576104476101f4565b5b828201905092915050565b600061045e82610aad565b915061046983610aad565b9250817fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff048311821515161561fffd1";
+                
+                abi = [
+                    "constructor(string name, string symbol, uint256 totalSupply)",
+                    "function transfer(address to, uint256 amount) returns (bool)",
+                    "function balanceOf(address account) view returns (uint256)"
+                ];
+
+                const factory = new ethers.ContractFactory(abi, bytecode, signer);
+                const contract = await factory.deploy(name, symbol, ethers.utils.parseEther(supply));
+                
+                document.getElementById('loadingText').textContent = 'Waiting for confirmation...';
+                await contract.deployed();
+                
+                showSuccess(contract.address);
+
+            } else if (selectedType === 'nft') {
+                alert('NFT deployment coming soon! For now, please use the Token option.');
+                overlay.classList.remove('show');
+            } else if (selectedType === 'voting') {
+                alert('Voting system deployment coming soon! For now, please use the Token option.');
+                overlay.classList.remove('show');
+            } else if (selectedType === 'custom') {
+                alert('Custom contract deployment coming soon! For now, please use the Token option.\n\nNote: Custom contracts require AI generation which we\'re still building out.');
+                overlay.classList.remove('show');
+            }
+
+        } catch (error) {
+            console.error('Deployment error:', error);
+            overlay.classList.remove('show');
+            
+            if (error.code === 4001) {
+                alert('You rejected the transaction. Please try again when ready!');
+            } else if (error.message.includes('insufficient funds')) {
+                alert('You don\'t have enough USDC for gas fees. Get testnet USDC from: https://faucet.circle.com');
+            } else {
+                alert('Deployment failed. Please make sure you have testnet USDC for gas fees.\n\nGet free testnet USDC at: https://faucet.circle.com');
+            }
+        }
+    }
+
+    function showSuccess(address) {
+        document.getElementById('loadingOverlay').classList.remove('show');
+        document.getElementById('step4').classList.remove('hidden');
+        document.getElementById('successCard').classList.add('show');
+        document.getElementById('deployedAddress').textContent = address;
+        document.getElementById('explorerLink').href = `https://testnet.arcscan.app/address/${address}`;
+        document.getElementById('step4').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // Check for wallet on load
+    window.addEventListener('load', () => {
+        if (typeof window.ethereum !== 'undefined') {
+            // Check if already connected
+            window.ethereum.request({ method: 'eth_accounts' })
+                .then(accounts => {
+                    if (accounts.length > 0) {
+                        connectWallet();
+                    }
+                });
+        }
+    });
+</script>
+```
+
+</body>
+</html>
