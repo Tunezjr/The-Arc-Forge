@@ -1,0 +1,10 @@
+{
+  "name": "generate-contract",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node generate-contract.js",
+    "start": "node generate-contract.js"
+  }
+}
